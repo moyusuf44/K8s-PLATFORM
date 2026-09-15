@@ -1,0 +1,22 @@
+# Git
+.gitignore
+.github/
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+dev.tfvars
+terraform-state-lock/
+Infra/
+
+# Documentation
+README.md
+
+# Screenshots
+*.png
+
+# Enviroment 
+.env
+
