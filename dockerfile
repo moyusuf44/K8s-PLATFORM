@@ -18,6 +18,6 @@ COPY --from=build /usr/local/lib//python3.11/site-packages /usr/local/lib/python
 COPY --from=build /usr/local/bin /usr/local/bin
 COPY app/ .
 
-EXPOSE 8000
+EXPOSE 5000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
