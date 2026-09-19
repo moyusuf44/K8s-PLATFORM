@@ -9,3 +9,15 @@ variable "subnet_ids" {
 variable "addon_name" {
   type = string
 }
+
+variable "desired_size" {
+  type = string
+}
+
+variable "max_size" {
+  type = string 
+}
+
+variable "min_size" {
+  type = string 
+}

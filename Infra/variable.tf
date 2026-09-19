@@ -12,3 +12,15 @@ variable "domain_name" {
 variable "subdomain" {
   type = string
 }
+
+variable "desired_size" {
+  type = string
+}
+
+variable "max_size" {
+  type = string 
+}
+
+variable "min_size" {
+  type = string 
+}
