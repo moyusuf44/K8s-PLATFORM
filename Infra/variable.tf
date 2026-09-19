@@ -24,3 +24,15 @@ variable "max_size" {
 variable "min_size" {
   type = string 
 }
+
+variable "zone_name" {
+  type = string
+}
+
+variable "region_id" {
+  type = string
+}
+
+variable "cloudflare_api_token" {
+  type = string
+}

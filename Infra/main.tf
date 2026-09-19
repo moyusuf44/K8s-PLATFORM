@@ -23,3 +23,16 @@ module "alb" {
 
   cluster_name = var.cluster_name
 }
+
+module "acm" {
+  source = "./modules/05-acm"
+
+  domain_name = var.domain_name
+  subdomain   = var.subdomain
+}
+
+module "cloudflare" {
+  source = "./modules/06-cloudflare"
+
+  zone_name = var.zone_name
+}
