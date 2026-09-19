@@ -12,4 +12,5 @@ module "eks" {
   subnet_ids = module.vpc.public_subnets
 
   cluster_name = var.cluster_name
+  addon_name   = var.addon_name
 }
