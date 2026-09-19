@@ -14,3 +14,9 @@ module "eks" {
   cluster_name = var.cluster_name
   addon_name   = var.addon_name
 }
+
+module "alb" {
+  source = "./modules/04-alb"
+
+  cluster_name = var.cluster_name
+}

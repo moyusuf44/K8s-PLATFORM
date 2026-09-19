@@ -77,9 +77,9 @@ resource "aws_iam_role" "nodegroup" {
                         "sts:AssumeRole",
                         "sts:TagSession"
                     ]
-                    Effect = "Allow"
-                    Principal = {
-                        Service = "ec2.amazonaws.com"
+                    Effect      = "Allow"
+                    Principal   = {
+                    Service     = "ec2.amazonaws.com"
                     }
                 },
         ]
