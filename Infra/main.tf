@@ -34,5 +34,19 @@ module "acm" {
 module "cloudflare" {
   source = "./modules/06-cloudflare"
 
+  domain_validation_options = module.acm.domain_validation_options
+
   zone_name = var.zone_name
+  zone_id   = var.zone_id
+
+}
+
+resource "aws_acm_certificate_validation" "this" {
+  certificate_arn = module.acm.certificate_arn
+
+  validation_record_fqdns = module.cloudflare.validation_record_fqdns
+
+  depends_on = [ 
+    module.cloudflare
+   ]
 }
