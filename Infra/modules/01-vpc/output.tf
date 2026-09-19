@@ -7,5 +7,5 @@ output "public_subnets" {
 }
 
 output "ecs_security_group" {
-  value = module.vpc.ecs_security_group
+  value = aws_security_group.this.id
 }

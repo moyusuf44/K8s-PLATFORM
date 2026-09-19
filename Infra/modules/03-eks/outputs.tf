@@ -3,5 +3,5 @@ output "eks_cluster_name" {
 }
 
 output "eks_addon_name" {
-  value = aws_eks_addon.this.name 
+  value = aws_eks_addon.this.addon_name
 }

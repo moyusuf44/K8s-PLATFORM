@@ -9,4 +9,7 @@ resource "aws_dynamodb_table" "terraform-k8sapp-state-lock" {
     }
 }
 
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "moyusufs-k8s-app-terraform-state"
+}
 
