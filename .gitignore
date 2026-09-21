@@ -3,6 +3,8 @@ dev.tfvars
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+**/.terraform/
+
 
 # Enviroment 
 .env 
