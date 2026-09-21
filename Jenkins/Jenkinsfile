@@ -1,0 +1,61 @@
+pipeline {
+    agent any 
+    
+    stage{
+        stage('AWS Credentials'){
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-credentials'
+                ]]) {
+                    sh 'aws sts get-caller-identity'
+                }
+            }
+        }
+    }
+    stages {
+        stage('terraform-state-locking'){
+            steps {
+                dir ('terraform-state-lock')
+                sh 'terraform init'
+                sh 'terraform apply --auto-approve'
+            }
+        }
+        stage('Repo'){
+            steps {
+                dir('Infra/modules/02-ecr')
+                sh 'terraform init'
+                sh 'terraform apply --auto-approve'
+            }
+        }        
+        stage('ACM'){
+            steps {
+                dir('Infra/modules/05-acm')
+                sh 'terraform init'
+                sh 'terraform apply --auto-approve'
+            }
+        }
+        stage('Docker'){
+            steps {
+                sh 'docker build -t k8s-app:v1 .'
+                sh 'docker tag k8s-app:v1 \
+                592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
+                sh 'docker push k8s-app:v1 \
+                592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
+            }
+        } 
+        stage ('terraform apply'){
+            steps {
+                dir ('Infra')
+                sh 'terraform init'
+                sh 'terraform apply --auto-approve'
+            }
+        }
+         stage('kubernetes'){
+            steps {
+                dir ('Infra')
+                sh ''
+            }
+        }
+    }
+}
