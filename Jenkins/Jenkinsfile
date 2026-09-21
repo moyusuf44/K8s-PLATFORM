@@ -1,6 +1,11 @@
 pipeline {
     agent any 
     
+     environment {
+        EKS_CLUSTER_NAME = 'k8s-platform'
+        AWS_REGION = 'eu-north-1'
+    }
+
     stage{
         stage('AWS Credentials'){
             steps {
@@ -46,9 +51,11 @@ pipeline {
         } 
         stage ('terraform apply'){
             steps {
-                dir ('Infra')
+                dir ('Infra'){
+                 withCredentials([string(credentialsId: 'CLOUDFLARE_API_TOKEN', variable: 'CLOUDFLARE_API_TOKEN')]) {
                 sh 'terraform init'
                 sh 'terraform apply --auto-approve'
+                }
             }
         }
          stage('kubernetes'){
