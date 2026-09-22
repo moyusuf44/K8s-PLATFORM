@@ -17,19 +17,6 @@ pipeline {
                 }
             }
         }
-        stage('terraform-state-locking'){
-            steps {
-                withCredentials([[
-                $class: 'AmazonWebServicesCredentialsBinding',
-                credentialsId: 'aws-credentials'
-                ]]) {
-                dir ('Infra-state-lock'){
-                bat 'terraform init'
-                bat 'terraform apply --auto-approve'
-                    }
-                }
-            }
-        }
         stage('Repo'){
             steps {
                 withCredentials([[
@@ -98,5 +85,7 @@ pipeline {
         }
    }
 }
+
+
 
 
