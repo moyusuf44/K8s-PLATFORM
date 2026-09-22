@@ -2,67 +2,101 @@ pipeline {
     agent any 
     
      environment {
-        EKS_CLUSTER_NAME = 'k8s-platform'
+        EKS_CLUSTER_NAME = 'k8s-app-cluster'
         AWS_REGION = 'eu-north-1'
     }
 
-    stage{
+    stages{
         stage('AWS Credentials'){
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-credentials'
                 ]]) {
-                    sh 'aws sts get-caller-identity'
+                    bat 'aws sts get-caller-identity'
                 }
             }
         }
-    }
-    stages {
         stage('terraform-state-locking'){
             steps {
-                dir ('terraform-state-lock')
-                sh 'terraform init'
-                sh 'terraform apply --auto-approve'
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
+                dir ('terraform-state-lock'){
+                bat 'terraform init'
+                bat 'terraform apply --auto-approve'
+                    }
+                }
             }
         }
         stage('Repo'){
             steps {
-                dir('Infra/modules/02-ecr')
-                sh 'terraform init'
-                sh 'terraform apply --auto-approve'
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
+                dir('Infra/modules/02-ecr'){
+                bat 'terraform init'
+                bat 'terraform apply --auto-approve'
+                    }
+                }
             }
         }        
         stage('ACM'){
             steps {
-                dir('Infra/modules/05-acm')
-                sh 'terraform init'
-                sh 'terraform apply --auto-approve'
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
+                dir('Infra/modules/05-acm'){
+                bat 'terraform init'
+                bat 'terraform apply --auto-approve'
+                    }
+                }
             }
         }
         stage('Docker'){
             steps {
-                sh 'docker build -t k8s-app:v1 .'
-                sh 'docker tag k8s-app:v1 \
-                592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
-                sh 'docker push k8s-app:v1 \
-                592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
+                bat 'docker build -t k8s-app:v1 .'
+                bat 'docker tag k8s-app:v1 592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
+                bat 'aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin 592587463331.dkr.ecr.eu-north-1.amazonaws.com'           
+                bat 'docker push 592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
+                }   
             }
         } 
         stage ('terraform apply'){
             steps {
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
                 dir ('Infra'){
                  withCredentials([string(credentialsId: 'CLOUDFLARE_API_TOKEN', variable: 'CLOUDFLARE_API_TOKEN')]) {
-                sh 'terraform init'
-                sh 'terraform apply --auto-approve'
+                bat 'terraform init'
+                bat 'terraform apply --auto-approve'
+                        }
+                    }    
                 }
             }
         }
-         stage('kubernetes'){
+        stage('kubernetes'){
             steps {
-                dir ('Infra')
-                sh ''
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
+                bat 'aws eks update-kubeconfig --region %AWS_REGION --name %EKS_CLUSTER_NAME%' 
+                bat 'kubectl get nodes'
+                bat 'helm upgrade --install k8s-app ./k8s-helm'
+                }
             }
         }
-    }
+   }
 }
+
+
