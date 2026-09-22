@@ -1,0 +1,10 @@
+replicaCount: 1 
+
+image: 
+  repository: 592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app
+  tag: v1
+
+service:
+  type: ClusterIP
+  port: 5000
+  targetPort: 5000
