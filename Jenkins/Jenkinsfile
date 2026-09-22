@@ -23,7 +23,7 @@ pipeline {
                 $class: 'AmazonWebServicesCredentialsBinding',
                 credentialsId: 'aws-credentials'
                 ]]) {
-                dir ('terraform-state-lock'){
+                dir ('Infra-state-lock'){
                 bat 'terraform init'
                 bat 'terraform apply --auto-approve'
                     }
@@ -90,7 +90,7 @@ pipeline {
                 $class: 'AmazonWebServicesCredentialsBinding',
                 credentialsId: 'aws-credentials'
                 ]]) {
-                bat 'aws eks update-kubeconfig --region %AWS_REGION --name %EKS_CLUSTER_NAME%' 
+                bat 'aws eks update-kubeconfig --region %AWS_REGION% --name %EKS_CLUSTER_NAME%' 
                 bat 'kubectl get nodes'
                 bat 'helm upgrade --install k8s-app ./k8s-helm'
                 }
