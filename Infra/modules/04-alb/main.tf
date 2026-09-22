@@ -1,13 +1,9 @@
-data "aws_eks_cluster" "this" {
-    name = var.cluster_name    
-}
-
 resource "aws_iam_openid_connect_provider" "this" {
-    url = data.aws_eks_cluster.this.identity[0].oidc[0].issuer
+  url = var.oidc_issuer
 
-    client_id_list = [
-        "sts.amazonaws.com"
-    ]    
+  client_id_list = [
+    "sts.amazonaws.com"
+  ]
 }
 
 resource "aws_iam_policy" "this" {
@@ -311,7 +307,7 @@ resource "aws_iam_policy" "this" {
 
         Resource = "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
       },
-
+      
       {
         Effect = "Allow"
 
@@ -323,39 +319,38 @@ resource "aws_iam_policy" "this" {
           "elasticloadbalancing:ModifyRule",
           "elasticloadbalancing:SetRulePriorities"
         ]
-
         Resource = "*"
       }
-
     ]
-
   })
-
 }
 
 resource "aws_iam_role" "alb-controller" {
-    name = "eks-alb-controller-role"
-    assume_role_policy = jsonencode({
-        Version   = "2012-10-17"
-        Statement = [
-            {
-                Action = [ 
-                    "sts:AssumeRoleWithWebIdentity",
-                ]
-                Effect = "Allow"
-                Principal = {
-                    Federated = aws_iam_openid_connect_provider.this.arn
-                }
-                Condition = {
-                    StringEquals = {
-                        "${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
-                        "${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
-                    }
-                }
-            },
+  name = "eks-alb-controller-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Action = [
+          "sts:AssumeRoleWithWebIdentity",
         ]
 
-    })
+        Effect = "Allow"
+
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.this.arn
+        }
+        Condition = {
+          StringEquals = {
+            "${replace(var.oidc_issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+            "${replace(var.oidc_issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+          }
+        }
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "alb-controller" {

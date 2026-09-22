@@ -18,11 +18,11 @@ variable "desired_size" {
 }
 
 variable "max_size" {
-  type = string 
+  type = string
 }
 
 variable "min_size" {
-  type = string 
+  type = string
 }
 
 variable "zone_name" {
@@ -41,3 +41,4 @@ variable "cloudflare_api_token" {
   type      = string
   sensitive = true
 }
+

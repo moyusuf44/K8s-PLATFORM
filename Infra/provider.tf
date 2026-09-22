@@ -1,12 +1,12 @@
 terraform {
   required_providers {
     clouflare = {
-        source  = "cloudflare/cloudflare"
-        version = " ~> 5.0"
+      source  = "cloudflare/cloudflare"
+      version = " ~> 5.0"
     }
     aws = {
-        source = "hashicorp/aws"
-        version = " ~> 5.0"
+      source  = "hashicorp/aws"
+      version = " ~> 5.0"
     }
   }
 }

@@ -3,7 +3,7 @@ module "vpc" {
 }
 
 module "ecr" {
-    source = "./modules/02-ecr"
+  source = "./modules/02-ecr"
 }
 
 module "eks" {
@@ -16,10 +16,13 @@ module "eks" {
   desired_size = var.desired_size
   max_size     = var.max_size
   min_size     = var.min_size
+
 }
 
 module "alb" {
   source = "./modules/04-alb"
+
+  oidc_issuer = module.eks.eks_oidc_issuer
 
   cluster_name = var.cluster_name
 }
@@ -46,7 +49,7 @@ resource "aws_acm_certificate_validation" "this" {
 
   validation_record_fqdns = module.cloudflare.validation_record_fqdns
 
-  depends_on = [ 
+  depends_on = [
     module.cloudflare
-   ]
+  ]
 }
