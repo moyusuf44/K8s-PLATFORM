@@ -1,3 +1,5 @@
+# A variable file of sorts for helm
+
 replicaCount: 1 
 
 image: 
@@ -8,3 +10,4 @@ service:
   type: ClusterIP
   port: 5000
   targetPort: 5000
+  protocol: TCP
