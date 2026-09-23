@@ -7,55 +7,6 @@ pipeline {
     }
 
     stages{
-        stage('AWS Credentials'){
-            steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-credentials'
-                ]]) {
-                    bat 'aws sts get-caller-identity'
-                }
-            }
-        }
-        stage('Repo'){
-            steps {
-                withCredentials([[
-                $class: 'AmazonWebServicesCredentialsBinding',
-                credentialsId: 'aws-credentials'
-                ]]) {
-                dir('Infra/modules/02-ecr'){
-                bat 'terraform init'
-                bat 'terraform apply --auto-approve'
-                    }
-                }
-            }
-        }        
-        stage('ACM'){
-            steps {
-                withCredentials([[
-                $class: 'AmazonWebServicesCredentialsBinding',
-                credentialsId: 'aws-credentials'
-                ]]) {
-                dir('Infra/modules/05-acm'){
-                bat 'terraform init'
-                bat 'terraform apply --auto-approve'
-                    }
-                }
-            }
-        }
-        stage('Docker'){
-            steps {
-                withCredentials([[
-                $class: 'AmazonWebServicesCredentialsBinding',
-                credentialsId: 'aws-credentials'
-                ]]) {
-                bat 'docker build -t k8s-app:v1 .'
-                bat 'docker tag k8s-app:v1 592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
-                bat 'aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin 592587463331.dkr.ecr.eu-north-1.amazonaws.com'           
-                bat 'docker push 592587463331.dkr.ecr.eu-north-1.amazonaws.com/k8s-app:v1'
-                }   
-            }
-        } 
         stage ('terraform apply'){
             steps {
                 withCredentials([[
@@ -68,18 +19,6 @@ pipeline {
                 bat 'terraform apply --auto-approve'
                         }
                     }    
-                }
-            }
-        }
-        stage('kubernetes'){
-            steps {
-                withCredentials([[
-                $class: 'AmazonWebServicesCredentialsBinding',
-                credentialsId: 'aws-credentials'
-                ]]) {
-                bat 'aws eks update-kubeconfig --region %AWS_REGION% --name %EKS_CLUSTER_NAME%' 
-                bat 'kubectl get nodes'
-                bat 'helm upgrade --install k8s-app ./k8s-helm'
                 }
             }
         }
