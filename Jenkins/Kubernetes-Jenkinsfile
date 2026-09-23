@@ -1,0 +1,27 @@
+pipeline {
+    agent any 
+    
+     environment {
+        EKS_CLUSTER_NAME = 'k8s-app-cluster'
+        AWS_REGION = 'eu-north-1'
+    }
+
+    stages{
+        stage('kubernetes'){
+            steps {
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
+                bat 'aws eks update-kubeconfig --region %AWS_REGION% --name %EKS_CLUSTER_NAME%' 
+                bat 'kubectl get nodes'
+                bat 'helm upgrade --install k8s-app ./k8s-helm'
+                }
+            }
+        }
+    }
+}
+
+
+
+
