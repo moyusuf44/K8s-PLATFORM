@@ -1,0 +1,27 @@
+pipeline {
+    agent any 
+    
+     environment {
+        AWS_REGION = 'eu-north-1'
+        EKS_CLUSTER_NAME = 'k8s-app-cluster'
+
+    }
+
+    stages{
+        stage('Infra Plan'){
+            steps {
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credentials'
+                ]]) {
+                dir ('Infra'){
+                withCredentials([string(credentialsId: 'CLOUDFLARE_API_TOKEN', variable: 'TF_VAR_cloudflare_api_token')]) {
+                bat 'terraform init'
+                bat 'terraform plan'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -63,7 +63,7 @@ pipeline {
                 credentialsId: 'aws-credentials'
                 ]]) {
                 dir ('Infra'){
-                 withCredentials([string(credentialsId: 'CLOUDFLARE_API_TOKEN', variable: 'CLOUDFLARE_API_TOKEN')]) {
+                 withCredentials([string(credentialsId: 'CLOUDFLARE_API_TOKEN', variable: 'TF_VAR_cloudflare_api_token')]) {
                 bat 'terraform init'
                 bat 'terraform apply --auto-approve'
                         }
