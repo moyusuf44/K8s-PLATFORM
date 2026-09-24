@@ -1,20 +1,20 @@
 pipeline {
-    agent any 
-    
-     environment {
+    agent any
+
+    environment {
         AWS_REGION = 'eu-north-1'
     }
 
-    stages{       
-        stage('ACM'){
+    stages {
+        stage('ACM') {
             steps {
                 withCredentials([[
-                $class: 'AmazonWebServicesCredentialsBinding',
-                credentialsId: 'aws-credentials'
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-credentials'
                 ]]) {
-                dir('Infra/modules/05-acm'){
-                bat 'terraform init'
-                bat 'terraform apply --auto-approve'
+                    dir('Infra/modules/05-acm') {
+                        bat 'terraform init'
+                        bat 'terraform apply --auto-approve -var-file="../../../terraform.tfvars"'
                     }
                 }
             }
