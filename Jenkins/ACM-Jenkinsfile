@@ -2,7 +2,9 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = 'eu-north-1'
+        AWS_REGION  = 'eu-north-1'
+        DOMAIN_NAME = 'moyusufs-k8s-app.com'
+        SUBDOMAIN   = 'tm'
     }
 
     stages {
@@ -14,7 +16,7 @@ pipeline {
                 ]]) {
                     dir('Infra/modules/05-acm') {
                         bat 'terraform init'
-                        bat 'terraform apply --auto-approve -var-file="../../../terraform.tfvars"'
+                        bat 'terraform apply --auto-approve -var="domain_name=%DOMAIN_NAME%" -var="subdomain=%SUBDOMAIN%"'
                     }
                 }
             }
