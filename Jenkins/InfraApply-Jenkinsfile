@@ -2,7 +2,6 @@ pipeline {
     agent any 
     
      environment {
-        EKS_CLUSTER_NAME = 'k8s-app-cluster'
         AWS_REGION = 'eu-north-1'
     }
 
