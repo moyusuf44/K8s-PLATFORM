@@ -37,7 +37,22 @@ module "acm" {
 module "cloudflare" {
   source = "./modules/06-cloudflare"
 
-  domain_validation_options = module.acm.domain_validation_options
+  domain_validation_options = {
+    root_app = module.acm.domain_validation_options[0]
+    app = module.acm.domain_validation_options[1]
+  }
+  
+  # domain_validation_options = {
+  #   root_app = one([
+  #     for dvo in module.acm.domain_validation_options :
+  #     dvo if dvo.domain_name == var.domain_name
+  #   ])
+
+  #   app = one([
+  #     for dvo in module.acm.domain_validation_options :
+  #     dvo if dvo.domain_name == "${var.subdomain}.${var.domain_name}"
+  #   ])
+  # }
 
   zone_name = var.zone_name
   zone_id   = var.zone_id

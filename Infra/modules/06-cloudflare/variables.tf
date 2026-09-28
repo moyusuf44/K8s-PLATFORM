@@ -7,7 +7,7 @@ variable "zone_id" {
 }
 
 variable "domain_validation_options" {
-  type = list(object({
+  type = map(object({
     domain_name           = string
     resource_record_name  = string 
     resource_record_type  = string
